@@ -477,32 +477,43 @@
             }
         });
 
+        var vehiculesByMarqueUrlTemplate = '{{ route('alerte.vehicules.by.marque', ['marqueId' => '__MARQUE_ID__']) }}';
+
+        function setVehiculeOptions(optionsHtml) {
+            addVehiculeSelect.html(optionsHtml).val('').trigger('change');
+        }
+
         // Chargement des véhicules par marque
         addMarqueSelect.on('change', function() {
             var marqueId = $(this).val();
             var vehiculeSelect = addVehiculeSelect;
 
-            vehiculeSelect.empty().append('<option value="">Chargement...</option>').trigger('change.select2');
+            setVehiculeOptions('<option value="">Chargement des véhicules...</option>');
 
             if (marqueId) {
                 $.ajax({
-                    url: '/alerte/vehicules/' + marqueId,
+                    url: vehiculesByMarqueUrlTemplate.replace('__MARQUE_ID__', encodeURIComponent(marqueId)),
                     type: 'GET',
                     dataType: 'json',
                     success: function(data) {
+                        if (!Array.isArray(data) || data.length === 0) {
+                            setVehiculeOptions('<option value="">Aucun véhicule pour cette marque</option>');
+                            return;
+                        }
+
                         vehiculeSelect.empty().append('<option value="">Sélectionner un véhicule</option>');
                         $.each(data, function(key, value) {
                             vehiculeSelect.append('<option value="' + value.id + '">' + value.matricule + '</option>');
                         });
-                        vehiculeSelect.trigger('change.select2');
+                        vehiculeSelect.val('').trigger('change');
                     },
                     error: function(xhr, status, error) {
                         console.error('Erreur AJAX:', xhr.responseText);
-                        vehiculeSelect.empty().append('<option value="">Erreur de chargement</option>').trigger('change.select2');
+                        setVehiculeOptions('<option value="">Erreur de chargement</option>');
                     }
                 });
             } else {
-                vehiculeSelect.empty().append('<option value="">Sélectionner un véhicule</option>').trigger('change.select2');
+                setVehiculeOptions('<option value="">Sélectionner une marque d'abord</option>');
             }
         });
 

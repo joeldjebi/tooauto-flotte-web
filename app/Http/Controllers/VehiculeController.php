@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Maatwebsite\Excel\Facades\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -232,7 +233,13 @@ class VehiculeController extends Controller
             'marque_id' => 'required|exists:marques,id',
             'type_de_carburant_id' => 'required|exists:type_de_carburants,id',
             'modele' => 'required|string|max:50',
-            'chauffeur_id' => 'nullable|exists:chauffeurs,id',
+            'chauffeur_id' => [
+                'required',
+                Rule::exists('chauffeurs', 'id')
+                    ->where(fn ($query) => $query
+                        ->where('gestionnaire_de_flotte_id', $this->currentFleetOwnerId())
+                        ->where('statut', 1)),
+            ],
             'couleur_vehicule_id' => 'required|exists:couleur_vehicules,id',
         ]);
 
@@ -323,7 +330,13 @@ class VehiculeController extends Controller
             'type_de_carburant_id' => 'required|exists:type_de_carburants,id',
             'couleur_vehicule_id' => 'required|exists:couleur_vehicules,id',
             'modele' => 'required|string|max:50',
-            'chauffeur_id' => 'required|exists:chauffeurs,id',
+            'chauffeur_id' => [
+                'required',
+                Rule::exists('chauffeurs', 'id')
+                    ->where(fn ($query) => $query
+                        ->where('gestionnaire_de_flotte_id', $this->currentFleetOwnerId())
+                        ->where('statut', '!=', 2)),
+            ],
         ]);
 
         if ($validator->fails()) {

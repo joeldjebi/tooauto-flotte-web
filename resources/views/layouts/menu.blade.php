@@ -20,7 +20,8 @@
     $dashboardActive = $currentMenu === 'dashboard' || (!$hasMenu && (request()->routeIs('dashboard') || in_array($currentPath, ['', 'dashboard'], true)));
     $vehiculesActive = in_array($currentMenu, ['véhicules', 'vehicules'], true) || (!$hasMenu && (request()->routeIs('vehicule.*') || $pathStartsWith('vehicule', 'liste-des-vehicules', 'add-vehicules', 'edit-vehicules')));
     $autodocsActive = $currentMenu === 'autodocs' || (!$hasMenu && (request()->routeIs('autodoc.*') || $pathStartsWith('liste-des-autodocs', 'add-autodocs', 'store-autodocs', 'update-autodocs')));
-    $piecesActive = in_array($currentMenu, ['piece-auto', 'annonces', 'annonce'], true) || (!$hasMenu && (request()->routeIs('index.annonce', 'add.annonce', 'edit.annonce', 'store.annonce', 'update.annonce', 'destroy.annonce') || $pathStartsWith('index/annonce', 'add/annonce', 'edit/annonce', 'store/annonce', 'update/annonce', 'destroy/annonce')));
+    $piecesActive = in_array($currentMenu, ['piece-auto', 'annonces'], true) || (!$hasMenu && (request()->routeIs('index.annonce', 'add.annonce', 'edit.annonce', 'store.annonce', 'update.annonce', 'destroy.annonce') || $pathStartsWith('index/annonce', 'add/annonce', 'edit/annonce', 'store/annonce', 'update/annonce', 'destroy/annonce')));
+    $articlesActive = $currentMenu === 'article-auto' || (!$hasMenu && request()->routeIs('index.article', 'store.article', 'update.article', 'destroy.article'));
     $entretiensActive = $currentMenu === 'entretiens' || (!$hasMenu && request()->routeIs('alerte.entretien*'));
     $assistancesActive = $currentMenu === 'assistances' || (!$hasMenu && request()->routeIs('alerte.assistance*'));
     $reparationsActive = $currentMenu === 'reparations' || (!$hasMenu && request()->routeIs('alerte.reparation*'));
@@ -31,8 +32,10 @@
     $visiteTechniqueAlertsActive = request()->routeIs('alerte.visite-technique');
     $controleTechniqueAlertsActive = request()->routeIs('alerte.controle-technique');
     $garagesActive = $currentMenu === 'garage-auto' || (!$hasMenu && request()->routeIs('index.garage', 'store.garage', 'update.garage', 'destroy.garage'));
-    $concessionnairesActive = in_array($currentMenu, ['index-concessionnaire', 'rdv-concessionnaire', 'demande-concessionnaire'], true) || (!$hasMenu && request()->routeIs('index.concessionnaire', 'index.concessionnaire-vehicule', 'rdv.concessionnaire', 'store.concessionnaire-rdv', 'destroy.concessionnaire-rdv'));
+    $concessionnairesActive = in_array($currentMenu, ['index-concessionnaire', 'rdv-concessionnaire'], true) || (!$hasMenu && request()->routeIs('index.concessionnaire', 'index.concessionnaire-vehicule', 'rdv.concessionnaire', 'store.concessionnaire-rdv', 'destroy.concessionnaire-rdv'));
     $offresActive = $currentMenu === 'index-offre-concessionnaire' || (!$hasMenu && request()->routeIs('index.offre-concessionnaire'));
+    $demandesConcessionnairesActive = $currentMenu === 'demande-concessionnaire' || (!$hasMenu && request()->routeIs('index.demande-concessionnaire', 'store.concessionnaire-demande', 'update.concessionnaire-demande', 'destroy.concessionnaire-demande'));
+    $annoncesEnvoyeesActive = $currentMenu === 'annonces-envoyees' || (!$hasMenu && request()->routeIs('annonce.sent'));
     $fonctionsActive = $currentMenu === 'fonction' || (!$hasMenu && request()->routeIs('fonction.*'));
     $rolesActive = $currentMenu === 'roles' || (!$hasMenu && request()->routeIs('roles.*'));
     $adminUsersActive = $currentMenu === 'admin-users' || (!$hasMenu && request()->routeIs('admin-users.*'));
@@ -41,10 +44,10 @@
     $passwordActive = $currentMenu === 'password' || (!$hasMenu && request()->routeIs('password.*'));
     $documentationActive = $currentMenu === 'documentation' || (!$hasMenu && request()->routeIs('documentation.*'));
 
-    $operationsVisible = $canAccessFeature('vehicules') || $canAccessFeature('autodocs') || $canAccessFeature('pieces');
+    $operationsVisible = $canAccessFeature('vehicules') || $canAccessFeature('autodocs') || $canAccessFeature('pieces') || $canAccessFeature('articles');
     $servicesVisible = $canAccessFeature('entretiens') || $canAccessFeature('assistances') || $canAccessFeature('reparations') || $canAccessFeature('carburants');
     $alertsVisible = $canAccessFeature('alertes') || $canAccessFeature('alerte_assurance') || $canAccessFeature('alerte_vidange') || $canAccessFeature('alerte_visite') || $canAccessFeature('alerte_controle');
-    $networkVisible = $canAccessFeature('prestataires') || $canAccessFeature('concessionnaires') || $canAccessFeature('offres');
+    $networkVisible = $canAccessFeature('prestataires') || $canAccessFeature('concessionnaires') || $canAccessFeature('offres') || $canAccessFeature('demandes_concessionnaires') || $canAccessFeature('annonces_envoyees');
     $usersVisible = $canAccessFeature('fonctions') || $canAccessFeature('roles') || $canAccessFeature('admin_users') || $canAccessFeature('utilisateurs');
     $settingsVisible = $canAccessFeature('profil') || $canAccessFeature('password');
     $helpVisible = $canAccessFeature('documentation') || ($currentUser && empty($currentUser->parent_gestionnaire_id));
@@ -197,13 +200,6 @@
                 </li>
                 @endif
 
-                <li class="{{ $documentationActive ? 'active' : '' }}">
-                    <a href="{{ route('documentation.index') }}" class="{{ $documentationActive ? 'active' : '' }}">
-                        <i data-feather="book-open"></i>
-                        <span>Documentation</span>
-                    </a>
-                </li>
-
                 @if($operationsVisible)
                 <li class="submenu-open">
                     <h6 class="submenu-hdr">Opérations</h6>
@@ -221,6 +217,11 @@
                         @if($canAccessFeature('pieces'))
                         <li class="{{ $piecesActive ? 'active' : '' }}">
                             <a href="{{ route('index.annonce') }}" class="{{ $piecesActive ? 'active' : '' }}"><i data-feather="package"></i><span>Pièces & accessoires</span></a>
+                        </li>
+                        @endif
+                        @if($canAccessFeature('articles'))
+                        <li class="{{ $articlesActive ? 'active' : '' }}">
+                            <a href="{{ route('index.article') }}" class="{{ $articlesActive ? 'active' : '' }}"><i data-feather="archive"></i><span>Articles</span></a>
                         </li>
                         @endif
                     </ul>
@@ -283,6 +284,12 @@
                         @if($canAccessFeature('offres'))
                         <li class="{{ $offresActive ? 'active' : '' }}"><a href="{{ route('index.offre-concessionnaire') }}" class="{{ $offresActive ? 'active' : '' }}"><i data-feather="tag"></i><span>Offres</span></a></li>
                         @endif
+                        @if($canAccessFeature('demandes_concessionnaires'))
+                        <li class="{{ $demandesConcessionnairesActive ? 'active' : '' }}"><a href="{{ route('index.demande-concessionnaire') }}" class="{{ $demandesConcessionnairesActive ? 'active' : '' }}"><i data-feather="inbox"></i><span>Demandes</span></a></li>
+                        @endif
+                        @if($canAccessFeature('annonces_envoyees'))
+                        <li class="{{ $annoncesEnvoyeesActive ? 'active' : '' }}"><a href="{{ route('annonce.sent') }}" class="{{ $annoncesEnvoyeesActive ? 'active' : '' }}"><i data-feather="send"></i><span>Annonces envoyées</span></a></li>
+                        @endif
                     </ul>
                 </li>
                 @endif
@@ -316,6 +323,22 @@
                         @endif
                         @if($canAccessFeature('password'))
                         <li class="{{ $passwordActive ? 'active' : '' }}"><a href="{{ route('password.index') }}" class="{{ $passwordActive ? 'active' : '' }}"><i data-feather="lock"></i><span>Mot de passe</span></a></li>
+                        @endif
+                    </ul>
+                </li>
+                @endif
+
+                @if($helpVisible)
+                <li class="submenu-open">
+                    <h6 class="submenu-hdr">Aide</h6>
+                    <ul>
+                        @if($canAccessFeature('documentation') || ($currentUser && empty($currentUser->parent_gestionnaire_id)))
+                        <li class="{{ $documentationActive ? 'active' : '' }}">
+                            <a href="{{ route('documentation.index') }}" class="{{ $documentationActive ? 'active' : '' }}">
+                                <i data-feather="book-open"></i>
+                                <span>Documentation</span>
+                            </a>
+                        </li>
                         @endif
                     </ul>
                 </li>

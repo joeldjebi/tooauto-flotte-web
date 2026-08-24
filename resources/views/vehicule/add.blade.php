@@ -397,8 +397,8 @@
                             </div>
                             <div class="col-lg-6 col-12">
                                 <div class="form-group">
-                                    <label for="vehicleChauffeurId">Utilisateur affecté</label>
-                                    <select class="form-control" name="chauffeur_id" id="vehicleChauffeurId" data-selected="{{ old('chauffeur_id') }}">
+                                    <label for="vehicleChauffeurId">Utilisateur affecté <span class="text-danger">*</span></label>
+                                    <select class="form-control" name="chauffeur_id" id="vehicleChauffeurId" data-selected="{{ old('chauffeur_id') }}" required>
                                         <option value="">Sélectionnez une fonction</option>
                                     </select>
                                 </div>

@@ -1374,7 +1374,7 @@ class DashboardController extends Controller
     public function annonceSent()
     {
         $data['title'] = 'Annonces envoyées';
-        $data['menu'] = 'annonce';
+        $data['menu'] = 'annonces-envoyees';
 
 
         $data["user"] = $this->currentFleetOwner();

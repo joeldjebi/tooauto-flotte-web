@@ -59,6 +59,81 @@
 			div#global-loader {
 				display: none;
 			}
+
+			#global-loader.tooauto-crud-loader {
+				align-items: center;
+				background: rgba(15, 23, 42, 0.32);
+				backdrop-filter: blur(3px);
+				inset: 0;
+				justify-content: center;
+				position: fixed;
+				z-index: 99999;
+			}
+
+			#global-loader.tooauto-crud-loader.is-active {
+				display: flex;
+			}
+
+			.tooauto-loader-panel {
+				align-items: center;
+				background: #ffffff;
+				border: 1px solid rgba(226, 232, 240, 0.95);
+				border-radius: 8px;
+				box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+				display: flex;
+				gap: 14px;
+				min-width: 260px;
+				padding: 18px 20px;
+			}
+
+			.tooauto-loader-spinner {
+				animation: tooautoSpin 0.75s linear infinite;
+				border: 3px solid #e2e8f0;
+				border-top-color: #efc242;
+				border-radius: 50%;
+				height: 34px;
+				width: 34px;
+			}
+
+			.tooauto-loader-title {
+				color: #111827;
+				display: block;
+				font-size: 14px;
+				font-weight: 800;
+				line-height: 1.15;
+			}
+
+			.tooauto-loader-copy {
+				color: #64748b;
+				display: block;
+				font-size: 12px;
+				font-weight: 700;
+				margin-top: 3px;
+			}
+
+			.tooauto-submit-loading {
+				cursor: wait !important;
+				opacity: 0.82;
+				pointer-events: none;
+			}
+
+			.tooauto-submit-spinner {
+				animation: tooautoSpin 0.75s linear infinite;
+				border: 2px solid currentColor;
+				border-right-color: transparent;
+				border-radius: 50%;
+				display: inline-block;
+				height: 1em;
+				margin-right: 8px;
+				vertical-align: -0.12em;
+				width: 1em;
+			}
+
+			@keyframes tooautoSpin {
+				to {
+					transform: rotate(360deg);
+				}
+			}
 		</style>
 
 	</head>
@@ -77,8 +152,14 @@
 				}
 			}
 		@endphp
-		<div id="global-loader" >
-			<div class="whirly-loader"> </div>
+		<div id="global-loader" class="tooauto-crud-loader" aria-hidden="true">
+			<div class="tooauto-loader-panel" role="status" aria-live="polite">
+				<span class="tooauto-loader-spinner" aria-hidden="true"></span>
+				<span>
+					<span class="tooauto-loader-title">Traitement en cours</span>
+					<span class="tooauto-loader-copy">Veuillez patienter quelques instants</span>
+				</span>
+			</div>
 		</div>
 		<!-- Main Wrapper -->
 		<div class="main-wrapper">

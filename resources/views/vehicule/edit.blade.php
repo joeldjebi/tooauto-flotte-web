@@ -148,7 +148,7 @@
                                 <select name="chauffeur_id" class="form-control selectpicker" data-live-search="true" required>
                                     <option value="">Sélectionner un chauffeur</option>
                                     @foreach ($chauffeurs as $chauffeur)
-                                        <option value="{{ $chauffeur->id }}" {{ $chauffeur->id == $vehicule->chauffeur_id ? 'selected' : '' }}>
+                                        <option value="{{ $chauffeur->id }}" {{ $chauffeur->id == $vehicule->user_id ? 'selected' : '' }}>
                                             {{ $chauffeur->nom }} {{ $chauffeur->prenoms }}
                                         </option>
                                     @endforeach

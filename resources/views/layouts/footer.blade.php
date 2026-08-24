@@ -110,10 +110,18 @@
 
 
 <script>
-    document.getElementById('pays_id').addEventListener('change', function() {
+    const paysElement = document.getElementById('pays_id');
+    const villeElement = document.getElementById('ville_id');
+
+    if (paysElement && villeElement) {
+    paysElement.addEventListener('change', function() {
         const paysId = this.value;
         const villeSelect = document.getElementById('ville_id');
         const communeSelect = document.getElementById('commune_id');
+
+        if (!villeSelect || !communeSelect) {
+            return;
+        }
 
         villeSelect.innerHTML = '<option value="">Sélectionnez une ville</option>';
         communeSelect.innerHTML = '<option value="">Sélectionnez une commune</option>';
@@ -138,9 +146,13 @@
         }
     });
 
-    document.getElementById('ville_id').addEventListener('change', function() {
+    villeElement.addEventListener('change', function() {
         const villeId = this.value;
         const communeSelect = document.getElementById('commune_id');
+
+        if (!communeSelect) {
+            return;
+        }
 
         communeSelect.innerHTML = '<option value="">Sélectionnez une commune</option>';
 
@@ -166,6 +178,7 @@
                 });
         }
     });
+    }
     </script>
 
 <script>
@@ -180,6 +193,9 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 // Si l'utilisateur confirme, soumettre le formulaire
+                if (window.TooautoCrudLoading) {
+                    window.TooautoCrudLoading.show('Suppression en cours');
+                }
                 document.getElementById('deleteForm' + serviceId).submit();
             }
         });
@@ -254,6 +270,7 @@ $(document).ready(function () {
 
 
 <script>
+    if (document.querySelector('#example') && window.DataTable) {
     let table = new DataTable('#example');
 
     new DataTable.Buttons(table, {
@@ -264,9 +281,95 @@ $(document).ready(function () {
         .buttons(0, null)
         .container()
         .prependTo(table.table().container());
+    }
 
-	$('.selectpicker').selectpicker();
+	if (window.jQuery && jQuery.fn.selectpicker) {
+		$('.selectpicker').selectpicker();
+	}
 
+</script>
+
+<script>
+    (function () {
+        var loader = document.getElementById('global-loader');
+
+        function getSubmitIntent(form) {
+            var methodInput = form.querySelector('input[name="_method"]');
+            var method = (methodInput ? methodInput.value : form.getAttribute('method') || 'GET').toUpperCase();
+            var action = (form.getAttribute('action') || '').toLowerCase();
+
+            if (method === 'DELETE' || action.includes('destroy') || action.includes('delete')) {
+                return 'Suppression en cours';
+            }
+
+            if (method === 'PUT' || method === 'PATCH' || action.includes('update')) {
+                return 'Mise à jour en cours';
+            }
+
+            if (action.includes('import')) {
+                return 'Import en cours';
+            }
+
+            return 'Enregistrement en cours';
+        }
+
+        function setButtonLoading(button, label) {
+            if (!button || button.dataset.tooautoLoading === '1') {
+                return;
+            }
+
+            button.dataset.tooautoOriginalHtml = button.innerHTML;
+            button.dataset.tooautoLoading = '1';
+            button.classList.add('tooauto-submit-loading');
+            button.innerHTML = '<span class="tooauto-submit-spinner" aria-hidden="true"></span>' + label;
+            button.disabled = true;
+        }
+
+        function show(message) {
+            if (!loader) {
+                return;
+            }
+
+            var title = loader.querySelector('.tooauto-loader-title');
+            if (title && message) {
+                title.textContent = message;
+            }
+
+            loader.classList.add('is-active');
+            loader.setAttribute('aria-hidden', 'false');
+        }
+
+        function isCrudForm(form) {
+            var method = (form.getAttribute('method') || 'GET').toUpperCase();
+
+            return method !== 'GET' && !form.hasAttribute('data-no-loading');
+        }
+
+        window.TooautoCrudLoading = {
+            show: show
+        };
+
+        document.addEventListener('submit', function (event) {
+            var form = event.target;
+
+            if (!(form instanceof HTMLFormElement) || !isCrudForm(form)) {
+                return;
+            }
+
+            if (form.dataset.tooautoSubmitting === '1') {
+                event.preventDefault();
+                return;
+            }
+
+            form.dataset.tooautoSubmitting = '1';
+
+            var label = getSubmitIntent(form);
+            var submitter = event.submitter || form.querySelector('button[type="submit"], input[type="submit"], button:not([type])');
+
+            setButtonLoading(submitter, label);
+            show(label);
+        }, true);
+    })();
 </script>
 
 </body>

@@ -81,7 +81,7 @@ Route::group(['middleware' => ['auth']], function (){
 
     // Routes pour les alertes
     Route::prefix('alerte')->group(function () {
-        Route::get('/vehicules/{marqueId}', [AlertController::class, 'getVehiculesByMarque']);
+        Route::get('/vehicules/{marqueId}', [AlertController::class, 'getVehiculesByMarque'])->name('alerte.vehicules.by.marque');
         Route::get('/entretien', [AlertController::class, 'entretien'])->name('alerte.entretien');
         Route::post('/entretien', [AlertController::class, 'storeEntretien'])->name('alerte.entretien.store');
         Route::put('/entretien/{id}', [AlertController::class, 'updateEntretien'])->name('alerte.entretien.update');
@@ -100,14 +100,13 @@ Route::group(['middleware' => ['auth']], function (){
         Route::delete('/carburant/{id}', [AlertController::class, 'destroyCarburant'])->name('alerte.carburant.destroy');
         Route::get('/', [AlertController::class, 'index'])->name('alerte.index');
         Route::post('/', [AlertController::class, 'store'])->name('alerte.store');
-        Route::get('/edit-{id}', [AlertController::class, 'edit'])->name('alerte.edit');
-        Route::put('/{id}', [AlertController::class, 'update'])->name('alerte.update');
-        Route::delete('/{id}', [AlertController::class, 'destroy'])->name('alerte.destroy');
         Route::get('/assurance', [AlertController::class, 'assurance'])->name('alerte.assurance');
         Route::get('/vidange', [AlertController::class, 'vidange'])->name('alerte.vidange');
         Route::get('/visite-technique', [AlertController::class, 'visiteTechnique'])->name('alerte.visite-technique');
         Route::get('/controle-technique', [AlertController::class, 'controleTechnique'])->name('alerte.controle-technique');
-        Route::get('/vehicules/{marqueId}', [AlertController::class, 'getVehiculesByMarque'])->name('alerte.vehicules.by.marque');
+        Route::get('/edit-{id}', [AlertController::class, 'edit'])->name('alerte.edit');
+        Route::put('/{id}', [AlertController::class, 'update'])->name('alerte.update');
+        Route::delete('/{id}', [AlertController::class, 'destroy'])->name('alerte.destroy');
     });
 
     Route::get('/liste-des-fonctions', [DashboardController::class, 'indexFonction'])->name('fonction.index');
